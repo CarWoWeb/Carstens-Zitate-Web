@@ -530,7 +530,7 @@ function showLock() {
   (has ? $("#unlock-pw") : $("#setup-token")).focus();
 }
 function lock() {
-  token = null; history = []; settings = draft = null; lib = null; releaseAssets = null; loaded.clear();
+  token = null; history = []; settings = draft = null; lib = null; loaded.clear();
   $("#unlock-pw").value = "";
   showLock();
 }
@@ -661,6 +661,7 @@ function renderArchive() {
         <div class="acts">
           <button class="btn small fav" data-act="fav" aria-pressed="${fav}">${fav ? "Favorit" : "Als Favorit merken"}</button>
           ${h.video ? `<button class="btn small" data-act="video">Video ansehen</button>` : ""}
+          ${h.video ? `<a class="btn small ghost" href="https://github.com/${esc(repo)}/releases/download/videos/${encodeURIComponent(h.video)}" target="_blank" rel="noopener">Original herunterladen</a>` : ""}
           <button class="btn small ghost" data-act="copy">Text kopieren</button>
           ${h.url ? `<a class="btn small ghost" href="${esc(h.url)}" target="_blank" rel="noopener">Auf Wikiquote</a>` : ""}
         </div>
@@ -699,27 +700,23 @@ async function toggleFavorite(h, btn) {
     toast(x.message, true);
   }
 }
-let releaseAssets = null;
 async function showVideo(h, btn) {
   const art = btn.closest(".q");
   const existing = art.querySelector("video");
   if (existing) { existing.remove(); btn.textContent = "Video ansehen"; return; }
   btn.disabled = true; btn.textContent = "Lade Video …";
   try {
-    if (!releaseAssets) {
-      try { releaseAssets = (await gh(`${R()}/releases/tags/videos`)).assets; }
-      catch (x) { if (x.status === 404) releaseAssets = []; else throw x; }
-    }
-    const asset = releaseAssets.find((a) => a.name === h.video);
-    if (!asset) throw new Error("Dieses Video liegt nicht im Archiv. Videos werden erst seit Einrichtung des Archivs gespeichert.");
-    const res = await gh(asset.url, { accept: "application/octet-stream", raw: true });
-    const url = URL.createObjectURL(await res.blob());
+    // Abspielkopie (720×1280) liegt im Branch "video-archiv". Release-Downloads blockiert der Browser (kein CORS).
+    const res = await gh(`${R()}/contents/${encodeURIComponent(h.video)}?ref=video-archiv`, { accept: "application/vnd.github.raw+json", raw: true });
+    const url = URL.createObjectURL(new Blob([await res.arrayBuffer()], { type: "video/mp4" }));
     const v = document.createElement("video");
     v.src = url; v.controls = true; v.autoplay = true; v.playsInline = true;
     art.querySelector(".acts").after(v);
     btn.textContent = "Video schließen";
   } catch (x) {
-    toast(x.message === "Failed to fetch" ? "Das Video ließ sich nicht laden. Es liegt im Release „videos“ auf GitHub." : x.message, true);
+    toast(x.status === 404
+      ? "Zu diesem Zitat gibt es keine Abspielkopie. Das Original liegt im Release „videos“ auf GitHub."
+      : x.message, true);
     btn.textContent = "Video ansehen";
   } finally { btn.disabled = false; }
 }
