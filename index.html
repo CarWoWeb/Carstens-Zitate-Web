@@ -662,6 +662,7 @@ function renderArchive() {
           <button class="btn small fav" data-act="fav" aria-pressed="${fav}">${fav ? "Favorit" : "Als Favorit merken"}</button>
           ${h.video ? `<button class="btn small" data-act="video">Video ansehen</button>` : ""}
           ${h.video ? `<a class="btn small ghost" href="https://github.com/${esc(repo)}/releases/download/videos/${encodeURIComponent(h.video)}" target="_blank" rel="noopener">Original herunterladen</a>` : ""}
+          ${h.dropboxLink ? `<button class="btn small" data-act="share">Teilen</button>` : ""}
           <button class="btn small ghost" data-act="copy">Text kopieren</button>
           ${h.url ? `<a class="btn small ghost" href="${esc(h.url)}" target="_blank" rel="noopener">Auf Wikiquote</a>` : ""}
         </div>
@@ -675,6 +676,17 @@ $("#quotes").addEventListener("click", async (e) => {
   if (btn.dataset.act === "copy") {
     await navigator.clipboard.writeText(`„${h.text}“\n— ${h.author}${h.source ? `, ${h.source}` : ""}`);
     toast("Zitat kopiert.");
+  }
+  if (btn.dataset.act === "share") {
+    // Handy: Teilen-Menü des Systems (WhatsApp, Signal, Mail …). Sonst: Text mit Link kopieren.
+    const text = `„${h.text.replace(/\n/g, " ")}“ – ${h.author}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: "Gedanke des Tages", text, url: h.dropboxLink }); }
+      catch (x) { if (x.name !== "AbortError") toast(x.message, true); }
+    } else {
+      await navigator.clipboard.writeText(`${text}\n\n${h.dropboxLink}`);
+      toast("Zitat und Video-Link kopiert. Zum Teilen einfach einfügen.");
+    }
   }
   if (btn.dataset.act === "fav") toggleFavorite(h, btn);
   if (btn.dataset.act === "video") showVideo(h, btn);
