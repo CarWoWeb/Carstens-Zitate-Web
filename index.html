@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Gedanke des Tages</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%23e9bb6a' stroke-width='4' stroke-dasharray='60 9' stroke-linecap='round' transform='rotate(-70 16 16)'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #10142b;
+    --night-2: #171c3a;
+    --night-3: #212750;
+    --line: #2d3463;
+    --ink: #f5efe3;
+    --muted: #a9a4bf;
+    --faint: #6f6b8a;
+    --gold: #e9bb6a;
+    --gold-soft: rgba(233, 187, 106, .14);
+    --rose: #e58b8b;
+    --sage: #9fc9a4;
+    --serif: "EB Garamond", Georgia, serif;
+    --sans: Inter, system-ui, sans-serif;
+    --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font: 15px/1.5 var(--sans);
+    color: var(--ink);
+    background: radial-gradient(1200px 700px at 85% -10%, #2a2050 0%, transparent 60%), var(--night);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  a { color: var(--gold); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  .btn {
+    border: 1px solid var(--line); background: var(--night-2); border-radius: 8px;
+    padding: 7px 14px; cursor: pointer; white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--muted); }
+  .btn:disabled { opacity: .45; cursor: default; border-color: var(--line); }
+  .btn.primary { background: var(--gold); color: #231a08; border-color: var(--gold); font-weight: 600; }
+  .btn.primary:hover { background: #f2cb85; }
+  .btn.small { padding: 3px 10px; font-size: 13px; }
+  .btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+  .btn.ghost:hover { color: var(--ink); border-color: var(--line); }
+  .field { display: grid; gap: 4px; }
+  .field > span { font-size: 13px; color: var(--muted); }
+  input[type=text], input[type=password], input[type=number], input[type=search], input[type=time], select, textarea {
+    background: var(--night); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); outline: none; }
+  .hint { font-size: 13px; color: var(--muted); }
+  .error { color: var(--rose); font-size: 14px; }
+  .ok { color: var(--sage); font-size: 14px; }
+
+  /* ---------- Sperrbildschirm ---------- */
+  #lock { min-height: 100vh; display: grid; place-items: center; padding: 32px 20px; }
+  .lock-card { width: min(420px, 100%); text-align: center; }
+  .enso { width: 132px; height: 132px; margin: 0 auto 18px; display: block; }
+  .enso path { fill: none; stroke: var(--gold); stroke-linecap: round; stroke-dasharray: 100 120; stroke-dashoffset: 100; animation: draw 2.4s cubic-bezier(.6,.05,.3,1) .2s forwards; }
+  .enso path.thin { stroke-width: 2.5; opacity: .5; animation-delay: .5s; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .lock-card h1 { font: 400 40px/1.1 var(--serif); margin: 0 0 6px; }
+  .lock-card .sub { color: var(--muted); margin: 0 0 28px; }
+  .lock-card form { display: grid; gap: 14px; text-align: left; }
+  .lock-card details { text-align: left; font-size: 14px; color: var(--muted); }
+  .lock-card details ol { padding-left: 20px; margin: 8px 0; }
+  .lock-card .links { display: flex; justify-content: center; margin-top: 18px; }
+
+  /* ---------- App-Rahmen ---------- */
+  header.top {
+    position: sticky; top: 0; z-index: 5; backdrop-filter: blur(10px);
+    background: rgba(16, 20, 43, .82); border-bottom: 1px solid var(--line);
+  }
+  .top-inner { max-width: 1180px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 24px; }
+  .brand { display: flex; align-items: center; gap: 10px; font: 500 22px var(--serif); white-space: nowrap; }
+  .brand svg { width: 26px; height: 26px; }
+  nav.tabs { display: flex; gap: 4px; flex: 1; overflow-x: auto; }
+  nav.tabs a {
+    text-decoration: none; color: var(--muted); padding: 6px 12px; border-radius: 8px; white-space: nowrap;
+  }
+  nav.tabs a:hover { color: var(--ink); }
+  nav.tabs a[aria-current=page] { color: var(--ink); background: var(--night-3); }
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 120px; }
+  h2 { font: 400 30px/1.2 var(--serif); margin: 0 0 4px; }
+  h3 { font: 600 15px var(--sans); margin: 0 0 10px; }
+  .lead { color: var(--muted); margin: 0 0 24px; max-width: 68ch; }
+  .panel { background: var(--night-2); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  .stack { display: grid; gap: 20px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 20;
+    background: var(--night-3); border: 1px solid var(--line); border-radius: 10px; padding: 10px 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35); max-width: calc(100% - 32px);
+  }
+  .toast.bad { border-color: var(--rose); }
+
+  /* ---------- Archiv ---------- */
+  .archive { display: grid; grid-template-columns: 250px 1fr; gap: 36px; align-items: start; }
+  .filters { position: sticky; top: 84px; display: grid; gap: 16px; }
+  .filters .count { font: 400 16px var(--serif); color: var(--muted); }
+  .check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .check input { accent-color: var(--gold); width: 16px; height: 16px; }
+  .quotes { display: grid; }
+  .q { padding: 26px 0 24px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 112px 1fr; gap: 24px; }
+  .q:first-child { padding-top: 4px; }
+  .q time { font-size: 13px; color: var(--faint); padding-top: 8px; line-height: 1.35; }
+  .q time b { display: block; font: 400 30px/1 var(--serif); color: var(--muted); margin-bottom: 2px; }
+  .q blockquote { margin: 0; font: 400 25px/1.42 var(--serif); max-width: 34em; white-space: pre-line; text-wrap: pretty; }
+  .q blockquote::before { content: "„"; color: var(--gold); }
+  .q blockquote::after { content: "“"; color: var(--gold); }
+  .q .by { margin-top: 10px; font: italic 400 18px var(--serif); color: var(--muted); }
+  .q .by .src { font: 400 13px var(--sans); font-style: normal; color: var(--faint); margin-left: 6px; }
+  .q .acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .q .fav[aria-pressed=true] { color: var(--gold); border-color: rgba(233,187,106,.5); background: var(--gold-soft); }
+  .q video { margin-top: 14px; width: 240px; aspect-ratio: 9 / 16; border-radius: 10px; background: #000; display: block; }
+  mark { background: var(--gold-soft); color: inherit; border-bottom: 1px solid var(--gold); }
+  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 1px 8px; margin-left: 6px; font-style: normal; }
+  .empty { padding: 48px 0; color: var(--muted); max-width: 52ch; }
+  .empty p { font: 400 22px/1.4 var(--serif); color: var(--ink); margin: 0 0 8px; }
+
+  /* ---------- Einstellungen ---------- */
+  table.authors { width: 100%; border-collapse: collapse; }
+  table.authors th { text-align: left; font: 500 13px var(--sans); color: var(--muted); padding: 0 8px 8px; }
+  table.authors td { padding: 5px 8px; border-top: 1px solid var(--line); vertical-align: middle; }
+  table.authors td.w { width: 92px; }
+  table.authors td.a { width: 1%; white-space: nowrap; }
+  table.authors tr.off input[type=text] { color: var(--faint); }
+  table.authors input[type=text], table.authors input[type=number] { padding: 5px 8px; }
+  tr.cand td { background: var(--night); padding: 14px 18px; }
+  .cand-list { display: grid; gap: 8px; max-height: 420px; overflow: auto; margin-top: 10px; }
+  .cand-item { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: start; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+  .cand-item p { margin: 0; font: 400 18px/1.4 var(--serif); white-space: pre-line; }
+  .cand-item.blocked p { color: var(--faint); text-decoration: line-through; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  textarea.words { min-height: 130px; font-size: 14px; }
+  .blocked-list { display: grid; gap: 6px; }
+  .blocked-list div { display: flex; gap: 12px; align-items: baseline; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 6px 0; }
+  .blocked-list span { font: 400 17px var(--serif); }
+  .savebar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: rgba(23, 28, 58, .95);
+    border-top: 1px solid var(--line); backdrop-filter: blur(8px);
+  }
+  .savebar > div { max-width: 1180px; margin: 0 auto; padding: 12px 24px; display: flex; gap: 12px; align-items: center; justify-content: flex-end; }
+  .savebar .msg { margin-right: auto; color: var(--muted); }
+
+  /* ---------- Dateien ---------- */
+  .files { display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: start; }
+  .filelist { display: grid; gap: 2px; position: sticky; top: 84px; }
+  .filelist button { text-align: left; background: none; border: 0; padding: 7px 10px; border-radius: 8px; cursor: pointer; color: var(--muted); }
+  .filelist button:hover { color: var(--ink); }
+  .filelist button[aria-current=true] { background: var(--night-3); color: var(--ink); }
+  .filelist small { display: block; color: var(--faint); font-size: 12px; }
+  .editor-head { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; }
+  .editor-head code { font: 500 14px var(--mono); }
+  textarea.code {
+    font: 13px/1.55 var(--mono); min-height: 62vh; resize: vertical; tab-size: 2; white-space: pre;
+    background: #0c1024;
+  }
+  .editor-foot { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
+  .editor-foot input { flex: 1; }
+
+  /* ---------- Läufe ---------- */
+  .runs { display: grid; }
+  .run { display: grid; grid-template-columns: 14px 1fr auto; gap: 14px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--faint); }
+  .dot.success { background: var(--sage); }
+  .dot.failure { background: var(--rose); }
+  .dot.running { background: var(--gold); animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .run small { color: var(--faint); }
+  .row { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; }
+
+  @media (max-width: 860px) {
+    .top-inner { flex-wrap: wrap; gap: 8px 16px; padding: 10px 16px; }
+    nav.tabs { order: 3; flex-basis: 100%; }
+    main { padding: 20px 16px 120px; }
+    .archive, .files { grid-template-columns: 1fr; gap: 20px; }
+    .filters, .filelist { position: static; }
+    .filters { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .filters > .count, .filters > label:first-of-type { grid-column: 1 / -1; }
+    .filters .grid2 { display: contents; }
+    .filelist { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .q { grid-template-columns: 1fr; gap: 6px; }
+    .q time b { display: inline; font-size: 18px; margin-right: 6px; }
+    .q blockquote { font-size: 22px; }
+    .grid3, .grid2 { grid-template-columns: 1fr; }
+    table.authors thead { display: none; }
+    table.authors tr:not(.cand) { display: grid; grid-template-columns: auto 1fr 80px; gap: 6px; padding: 8px 0; border-top: 1px solid var(--line); }
+    table.authors td { border: 0; padding: 2px; }
+    table.authors td.page { grid-column: 2 / 4; }
+    table.authors td.a { grid-column: 1 / 4; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .enso path { animation: none; stroke-dashoffset: 0; }
+    .dot.running { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= Sperrbildschirm ================= -->
+<section id="lock">
+  <div class="lock-card">
+    <svg class="enso" viewBox="0 0 120 120" aria-hidden="true">
+      <path pathLength="100" stroke-width="7" d="M84 22 C 62 8, 26 14, 16 46 C 7 76, 30 106, 62 104 C 92 102, 110 76, 102 50 C 98 38, 92 31, 86 27"/>
+      <path class="thin" pathLength="100" d="M80 26 C 60 15, 30 20, 22 48 C 15 74, 36 98, 62 97 C 88 95, 102 74, 96 52"/>
+    </svg>
+    <h1>Gedanke des Tages</h1>
+    <p class="sub" id="lock-sub">Dein Archiv der täglichen Zitate.</p>
+
+    <form id="unlock-form" hidden>
+      <label class="field"><span>Passwort</span>
+        <input type="password" id="unlock-pw" autocomplete="current-password" required autofocus></label>
+      <button class="btn primary" type="submit">Öffnen</button>
+      <p class="error" id="unlock-err" hidden></p>
+    </form>
+
+    <form id="setup-form" hidden>
+      <label class="field"><span>GitHub-Repository</span>
+        <input type="text" id="setup-repo" placeholder="benutzername/repository" required spellcheck="false"></label>
+      <label class="field"><span>GitHub-Token</span>
+        <input type="password" id="setup-token" autocomplete="off" required spellcheck="false"></label>
+      <details>
+        <summary>So erstellst du das Token</summary>
+        <ol>
+          <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Neues Fine-grained Token</a> öffnen.</li>
+          <li>Repository access: <i>Only select repositories</i> und dieses Repo wählen.</li>
+          <li>Permissions: <i>Contents</i>, <i>Actions</i> und <i>Workflows</i> auf <i>Read and write</i>.</li>
+          <li>Ablaufdatum nach Wunsch, dann erzeugen und hier einfügen.</li>
+        </ol>
+        Das Token wird nur in diesem Browser gespeichert, verschlüsselt mit deinem Passwort.
+      </details>
+      <label class="field"><span>Passwort für diese Seite</span>
+        <input type="password" id="setup-pw" autocomplete="new-password" minlength="8" required></label>
+      <label class="field"><span>Passwort wiederholen</span>
+        <input type="password" id="setup-pw2" autocomplete="new-password" minlength="8" required></label>
+      <button class="btn primary" type="submit">Einrichten</button>
+      <p class="error" id="setup-err" hidden></p>
+    </form>
+
+    <div class="links"><button class="btn ghost small" id="reset-vault" hidden>Passwort vergessen? Neu einrichten</button></div>
+  </div>
+</section>
+
+<!-- ================= App ================= -->
+<div id="app" hidden>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="11" fill="none" stroke="#e9bb6a" stroke-width="3.2" stroke-dasharray="60 9" stroke-linecap="round" transform="rotate(-70 16 16)"/></svg>
+        Gedanke des Tages
+      </div>
+      <nav class="tabs" aria-label="Bereiche">
+        <a href="#archiv">Archiv</a>
+        <a href="#einstellungen">Autoren und Filter</a>
+        <a href="#versand">Versand</a>
+        <a href="#dateien">Dateien</a>
+      </nav>
+      <button class="btn ghost small" id="lock-btn" style="margin-left:auto">Sperren</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Archiv -->
+    <section id="view-archiv" hidden>
+      <div class="archive">
+        <aside class="filters" aria-label="Filter">
+          <div class="count" id="arch-count"></div>
+          <label class="field"><span>Suche</span>
+            <input type="search" id="f-q" placeholder="Wort, Autor oder Werk"></label>
+          <label class="field"><span>Autor</span><select id="f-author"></select></label>
+          <div class="grid2">
+            <label class="field"><span>Jahr</span><select id="f-year"></select></label>
+            <label class="field"><span>Monat</span><select id="f-month"></select></label>
+          </div>
+          <label class="field"><span>Sortierung</span>
+            <select id="f-sort">
+              <option value="new">Neueste zuerst</option>
+              <option value="old">Älteste zuerst</option>
+              <option value="author">Nach Autor</option>
+            </select></label>
+          <label class="check"><input type="checkbox" id="f-fav"> Nur Favoriten</label>
+          <button class="btn small ghost" id="f-reset" hidden>Filter zurücksetzen</button>
+        </aside>
+        <div class="quotes" id="quotes"></div>
+      </div>
+    </section>
+
+    <!-- Einstellungen -->
+    <section id="view-einstellungen" hidden>
+      <h2>Autoren und Filter</h2>
+      <p class="lead">Aus diesen Autoren wird jeden Morgen gelost. Ein höheres Gewicht heißt: Der Autor kommt öfter dran. Mit „Prüfen“ siehst du, welche Zitate eines Autors gerade durch den Filter kommen, und kannst einzelne sperren.</p>
+      <div class="stack">
+        <div class="panel">
+          <table class="authors">
+            <thead><tr><th>Aktiv</th><th>Name im Video</th><th>Seite auf Wikiquote</th><th>Gewicht</th><th></th></tr></thead>
+            <tbody id="authors-body"></tbody>
+          </table>
+          <div style="margin-top:14px"><button class="btn small" id="add-author">Autor hinzufügen</button></div>
+        </div>
+        <div class="panel">
+          <h3>Filter</h3>
+          <div class="grid3" style="margin-bottom:16px">
+            <label class="field"><span>Mindestlänge (Zeichen)</span><input type="number" min="1" id="s-min"></label>
+            <label class="field"><span>Höchstlänge (Zeichen)</span><input type="number" min="1" id="s-max"></label>
+            <label class="field"><span>Höchstens Wörter</span><input type="number" min="1" id="s-words"></label>
+          </div>
+          <div class="grid2">
+            <label class="field"><span>Mindestens eines dieser Wörter muss vorkommen</span>
+              <textarea class="words" id="s-pos" spellcheck="false"></textarea></label>
+            <label class="field"><span>Zitate mit diesen Wörtern werden aussortiert</span>
+              <textarea class="words" id="s-neg" spellcheck="false"></textarea></label>
+          </div>
+          <p class="hint">Wörter mit Komma oder Zeilenumbruch trennen. Ein Eintrag passt auf jedes Wort, das so beginnt: „licht“ trifft auch „Lichtes“. Längenwerte über 210 Zeichen machen die Schrift im Video sehr klein.</p>
+        </div>
+        <div class="panel">
+          <h3>Gesperrte Zitate</h3>
+          <div class="blocked-list" id="blocked-list"></div>
+        </div>
+      </div>
+      <div class="savebar" id="settings-bar" hidden>
+        <div>
+          <span class="msg">Ungespeicherte Änderungen</span>
+          <button class="btn ghost" id="settings-discard">Verwerfen</button>
+          <button class="btn primary" id="settings-save">Änderungen speichern</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Versand -->
+    <section id="view-versand" hidden>
+      <h2>Versand</h2>
+      <p class="lead">Jeder Lauf sucht ein Zitat, rendert das Video und schickt die Mail. Ein Lauf dauert etwa 5 bis 8 Minuten.</p>
+      <div class="stack">
+        <div class="panel">
+          <div class="row">
+            <button class="btn primary" id="run-now">Jetzt ein Zitat schicken</button>
+            <span id="run-msg" class="hint"></span>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Tägliche Uhrzeit</h3>
+          <div class="row">
+            <label class="field"><span>Deutsche Zeit</span><input type="time" id="cron-time" step="300" style="width:140px"></label>
+            <button class="btn" id="cron-save" disabled>Uhrzeit speichern</button>
+            <span id="cron-msg" class="hint"></span>
+          </div>
+          <p class="hint" id="cron-hint"></p>
+        </div>
+        <div class="panel">
+          <div class="row" style="justify-content:space-between;margin-bottom:6px">
+            <h3 style="margin:0">Letzte Läufe</h3>
+            <button class="btn small ghost" id="runs-reload">Aktualisieren</button>
+          </div>
+          <div class="runs" id="runs"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dateien -->
+    <section id="view-dateien" hidden>
+      <h2>Dateien</h2>
+      <p class="lead">Hier änderst du den Code direkt im Repository. Jede gespeicherte Änderung ist ein Commit und gilt ab dem nächsten Lauf. Ältere Fassungen findest du jederzeit in der Versionsgeschichte auf GitHub.</p>
+      <div class="files">
+        <div class="filelist" id="filelist"></div>
+        <div>
+          <div class="editor-head">
+            <code id="ed-path"></code>
+            <a id="ed-history" target="_blank" rel="noopener">Versionsgeschichte</a>
+          </div>
+          <textarea class="code" id="ed-text" spellcheck="false" wrap="off"></textarea>
+          <div class="editor-foot">
+            <input type="text" id="ed-msg" placeholder="Was hast du geändert? (optional)">
+            <button class="btn primary" id="ed-save" disabled>Datei speichern</button>
+          </div>
+          <p id="ed-status" class="hint"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script type="module">
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const VAULT = "gdt.vault.v1";
+const WORKFLOW = "gedanke-des-tages.yml";
+const EDITABLE = [
+  ["config/settings.json", "Autoren, Gewichte, Filter"],
+  ["src/fetch-quote.mjs", "Zitatauswahl"],
+  ["src/quote-filter.mjs", "Filterregeln"],
+  ["src/wikiquote.mjs", "Wikiquote auslesen"],
+  ["data/reserve.json", "Reserve-Zitate"],
+  ["video/index.html", "Video-Vorlage"],
+  ["src/send-mail.mjs", "Mail"],
+  ["src/daily.mjs", "Tagesablauf"],
+  ["src/render-video.mjs", "Video rendern"],
+  [".github/workflows/gedanke-des-tages.yml", "Zeitplan"],
+  ["README.md", "Anleitung"],
+];
+
+let token = null, repo = null, branch = "main";
+let history = [], favorites = { keys: new Set(), sha: null };
+let settings = null, settingsSha = null, draft = null;
+
+/* ---------------- Hilfen ---------------- */
+function toast(msg, bad = false) {
+  const t = $("#toast");
+  t.textContent = msg; t.className = "toast" + (bad ? " bad" : ""); t.hidden = false;
+  clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), bad ? 7000 : 3500);
+}
+const b64 = {
+  enc(str) {
+    const bytes = new TextEncoder().encode(str); let bin = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  },
+  dec(b) { return new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\s/g, "")), (c) => c.charCodeAt(0))); },
+  bytes(u8) { let s = ""; u8.forEach((x) => (s += String.fromCharCode(x))); return btoa(s); },
+  unbytes(b) { return Uint8Array.from(atob(b), (c) => c.charCodeAt(0)); },
+};
+
+/* ---------------- Tresor: Token verschlüsselt mit Passwort ---------------- */
+async function keyFrom(pw, salt) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 310000, hash: "SHA-256" }, base,
+    { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+}
+async function sealVault(pw, data) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await keyFrom(pw, salt), new TextEncoder().encode(JSON.stringify(data)));
+  localStorage.setItem(VAULT, JSON.stringify({ salt: b64.bytes(salt), iv: b64.bytes(iv), ct: b64.bytes(new Uint8Array(ct)) }));
+}
+async function openVault(pw) {
+  const v = JSON.parse(localStorage.getItem(VAULT));
+  const key = await keyFrom(pw, b64.unbytes(v.salt));
+  const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64.unbytes(v.iv) }, key, b64.unbytes(v.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+
+/* ---------------- GitHub-API ---------------- */
+async function gh(path, { method = "GET", body, accept, raw } = {}) {
+  const res = await fetch(path.startsWith("http") ? path : `https://api.github.com${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: accept || "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      ...(body ? { "Content-Type": "application/json" } : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    let msg = res.statusText;
+    try { msg = (await res.json()).message || msg; } catch {}
+    const e = new Error(ghMessage(res.status, msg, path)); e.status = res.status; throw e;
+  }
+  if (raw) return res;
+  if (res.status === 204) return null;
+  return (accept || "").includes("raw") ? res.text() : res.json();
+}
+function ghMessage(status, msg, path) {
+  if (status === 401) return "GitHub lehnt das Token ab. Es ist abgelaufen oder ungültig. Richte die Seite mit einem neuen Token ein.";
+  if (status === 403 && /workflow/i.test(path + msg)) return "Dem Token fehlt die Berechtigung „Workflows: Read and write“.";
+  if (status === 403 || (status === 404 && /actions|dispatches/.test(path))) return `Dem Token fehlt eine Berechtigung (${msg}). Nötig sind Contents, Actions und Workflows mit „Read and write“.`;
+  if (status === 409) return "Die Datei wurde inzwischen auf GitHub geändert. Lade sie neu und speichere dann noch einmal.";
+  return `GitHub: ${msg} (${status})`;
+}
+const R = () => `/repos/${repo}`;
+async function getFile(path) {
+  try {
+    const j = await gh(`${R()}/contents/${encodeURI(path)}?ref=${branch}`);
+    let text = j.content ? b64.dec(j.content) : "";
+    if (!j.content && j.size > 0) text = await gh(`${R()}/contents/${encodeURI(path)}?ref=${branch}`, { accept: "application/vnd.github.raw+json" });
+    return { text, sha: j.sha };
+  } catch (e) {
+    if (e.status === 404) return { text: null, sha: null };
+    throw e;
+  }
+}
+async function putFile(path, text, sha, message) {
+  const j = await gh(`${R()}/contents/${encodeURI(path)}`, {
+    method: "PUT",
+    body: { message, content: b64.enc(text), branch, ...(sha ? { sha } : {}) },
+  });
+  return j.content.sha;
+}
+
+// Filter- und Wikiquote-Logik kommt aus dem Repo selbst (src/*.mjs), damit die Prüfung
+// immer genau dieselben Regeln benutzt wie der tägliche Lauf – auch nach Änderungen unter „Dateien“.
+let lib = null;
+async function loadLib() {
+  if (lib) return lib;
+  const load = async (p) => {
+    const { text } = await getFile(p);
+    if (text == null) throw new Error(`${p} fehlt im Repository.`);
+    const url = URL.createObjectURL(new Blob([text], { type: "text/javascript" }));
+    try { return await import(url); } finally { URL.revokeObjectURL(url); }
+  };
+  const [f, w] = await Promise.all([load("src/quote-filter.mjs"), load("src/wikiquote.mjs")]);
+  return (lib = { ...f, ...w });
+}
+
+/* ---------------- Entsperren / Einrichten ---------------- */
+let idleTimer;
+function armIdle() {
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(lock, 30 * 60 * 1000); // nach 30 Minuten ohne Aktivität sperren
+}
+["pointerdown", "keydown"].forEach((ev) => addEventListener(ev, () => token && armIdle(), { passive: true }));
+
+function showLock() {
+  const has = !!localStorage.getItem(VAULT);
+  $("#lock").hidden = false; $("#app").hidden = true;
+  $("#unlock-form").hidden = !has; $("#setup-form").hidden = has; $("#reset-vault").hidden = !has;
+  $("#lock-sub").textContent = has ? "Dein Archiv der täglichen Zitate." : "Einmal einrichten, dann reicht dein Passwort.";
+  (has ? $("#unlock-pw") : $("#setup-token")).focus();
+}
+function lock() {
+  token = null; history = []; settings = draft = null; lib = null; releaseAssets = null; loaded.clear();
+  $("#unlock-pw").value = "";
+  showLock();
+}
+$("#lock-btn").onclick = lock;
+$("#reset-vault").onclick = () => {
+  if (!confirm("Gespeichertes Token in diesem Browser löschen und die Seite neu einrichten?")) return;
+  localStorage.removeItem(VAULT); showLock();
+};
+
+$("#unlock-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const err = $("#unlock-err"); err.hidden = true;
+  const btn = e.submitter; btn.disabled = true; btn.textContent = "Öffne …";
+  try {
+    const v = await openVault($("#unlock-pw").value);
+    token = v.token; repo = v.repo;
+    await start();
+  } catch (x) {
+    err.textContent = x.name === "OperationError" ? "Das Passwort stimmt nicht." : x.message; err.hidden = false;
+    token = null;
+  } finally { btn.disabled = false; btn.textContent = "Öffnen"; }
+};
+
+$("#setup-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const err = $("#setup-err"); err.hidden = true;
+  const pw = $("#setup-pw").value;
+  if (pw !== $("#setup-pw2").value) { err.textContent = "Die Passwörter sind nicht gleich."; err.hidden = false; return; }
+  const btn = e.submitter; btn.disabled = true; btn.textContent = "Prüfe Token …";
+  token = $("#setup-token").value.trim(); repo = $("#setup-repo").value.trim().replace(/^https:\/\/github\.com\//, "").replace(/\/$/, "");
+  try {
+    await gh(R());
+    await sealVault(pw, { token, repo });
+    $("#setup-token").value = $("#setup-pw").value = $("#setup-pw2").value = "";
+    await start();
+  } catch (x) {
+    err.textContent = x.status === 404 ? `Repository „${repo}“ nicht gefunden oder das Token hat keinen Zugriff darauf.` : x.message;
+    err.hidden = false; token = null;
+  } finally { btn.disabled = false; btn.textContent = "Einrichten"; }
+};
+
+async function start() {
+  const info = await gh(R());
+  branch = info.default_branch;
+  $("#lock").hidden = true; $("#app").hidden = false;
+  armIdle();
+  await loadArchive();
+  route();
+}
+
+/* ---------------- Navigation ---------------- */
+const VIEWS = ["archiv", "einstellungen", "versand", "dateien"];
+const loaded = new Set();
+async function route() {
+  if (!token) return;
+  let v = location.hash.slice(1);
+  if (!VIEWS.includes(v)) v = "archiv";
+  for (const name of VIEWS) $(`#view-${name}`).hidden = name !== v;
+  document.querySelectorAll("nav.tabs a").forEach((a) => { if (a.getAttribute("href") !== "#" + v) a.removeAttribute("aria-current"); else a.setAttribute("aria-current", "page"); });
+  $("#settings-bar").hidden = v !== "einstellungen" || !isDirty();
+  try {
+    if (v === "einstellungen" && !loaded.has(v)) { await loadSettings(); loaded.add(v); }
+    if (v === "versand") { await loadVersand(); loaded.add(v); }
+    if (v === "dateien" && !loaded.has(v)) { renderFileList(); await openFile(EDITABLE[0][0]); loaded.add(v); }
+  } catch (x) { toast(x.message, true); }
+}
+addEventListener("hashchange", route);
+addEventListener("beforeunload", (e) => { if (isDirty() || edDirty) e.preventDefault(); });
+
+/* ================= Archiv ================= */
+const MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+async function loadArchive() {
+  const [h, f] = await Promise.all([getFile("data/history.json"), getFile("data/favorites.json")]);
+  history = h.text ? JSON.parse(h.text) : [];
+  history.forEach((x, i) => (x._i = i));
+  favorites = { keys: new Set(f.text ? JSON.parse(f.text) : []), sha: f.sha };
+  fillFilterOptions();
+  renderArchive();
+}
+function fillFilterOptions() {
+  const authors = {};
+  history.forEach((h) => (authors[h.author] = (authors[h.author] || 0) + 1));
+  const opts = (list) => list.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join("");
+  $("#f-author").innerHTML = opts([["", "Alle Autoren"], ...Object.entries(authors).sort((a, b) => a[0].localeCompare(b[0], "de")).map(([a, n]) => [a, `${a} (${n})`])]);
+  const years = [...new Set(history.map((h) => h.date.slice(0, 4)))].sort().reverse();
+  $("#f-year").innerHTML = opts([["", "Alle"], ...years.map((y) => [y, y])]);
+  $("#f-month").innerHTML = opts([["", "Alle"], ...MONTHS.map((m, i) => [String(i + 1).padStart(2, "0"), m])]);
+  $("#arch-count").textContent = history.length
+    ? `${history.length} ${history.length === 1 ? "Zitat" : "Zitate"} von ${Object.keys(authors).length} ${Object.keys(authors).length === 1 ? "Autor" : "Autoren"}`
+    : "";
+}
+["#f-q", "#f-author", "#f-year", "#f-month", "#f-sort", "#f-fav"].forEach((s) => $(s).addEventListener("input", renderArchive));
+$("#f-reset").onclick = () => {
+  $("#f-q").value = $("#f-author").value = $("#f-year").value = $("#f-month").value = ""; $("#f-fav").checked = false;
+  renderArchive();
+};
+const norm = (s) => String(s || "").toLocaleLowerCase("de");
+function highlight(text, q) {
+  if (!q) return esc(text);
+  const t = String(text), lower = norm(t); let out = "", i = 0, j;
+  while ((j = lower.indexOf(q, i)) !== -1) { out += esc(t.slice(i, j)) + "<mark>" + esc(t.slice(j, j + q.length)) + "</mark>"; i = j + q.length; }
+  return out + esc(t.slice(i));
+}
+function renderArchive() {
+  const q = norm($("#f-q").value.trim()), au = $("#f-author").value, y = $("#f-year").value, m = $("#f-month").value;
+  const onlyFav = $("#f-fav").checked, sort = $("#f-sort").value;
+  $("#f-reset").hidden = !(q || au || y || m || onlyFav);
+  let list = history.filter((h) =>
+    (!q || norm(h.text).includes(q) || norm(h.author).includes(q) || norm(h.source).includes(q)) &&
+    (!au || h.author === au) && (!y || h.date.startsWith(y)) && (!m || h.date.slice(5, 7) === m) &&
+    (!onlyFav || favorites.keys.has(h.key)));
+  const chrono = (a, b) => a.date.localeCompare(b.date) || a._i - b._i;
+  list.sort(sort === "old" ? chrono : sort === "author" ? (a, b) => a.author.localeCompare(b.author, "de") || chrono(b, a) : (a, b) => chrono(b, a));
+  const box = $("#quotes");
+  if (!history.length) {
+    box.innerHTML = `<div class="empty"><p>Noch keine Zitate.</p>Der erste Versand legt hier den ersten Eintrag an. Du kannst ihn unter <a href="#versand">Versand</a> sofort starten.</div>`;
+    return;
+  }
+  if (!list.length) { box.innerHTML = `<div class="empty"><p>Kein Zitat passt zu diesem Filter.</p>Ändere die Suche oder setze den Filter zurück.</div>`; return; }
+  box.innerHTML = list.map((h) => {
+    const d = new Date(h.date + "T12:00:00");
+    const fav = favorites.keys.has(h.key);
+    return `<article class="q" data-i="${h._i}">
+      <time datetime="${h.date}"><b>${d.getDate()}.</b>${d.toLocaleDateString("de-DE", { month: "short", year: "numeric" })}<br>${d.toLocaleDateString("de-DE", { weekday: "long" })}</time>
+      <div>
+        <blockquote>${highlight(h.text, q)}</blockquote>
+        <div class="by">${highlight(h.author, q)}${h.source ? `<span class="src">${highlight(h.source, q)}</span>` : ""}${h.origin === "reserve" ? `<span class="tag">Reserve</span>` : ""}</div>
+        <div class="acts">
+          <button class="btn small fav" data-act="fav" aria-pressed="${fav}">${fav ? "Favorit" : "Als Favorit merken"}</button>
+          ${h.video ? `<button class="btn small" data-act="video">Video ansehen</button>` : ""}
+          <button class="btn small ghost" data-act="copy">Text kopieren</button>
+          ${h.url ? `<a class="btn small ghost" href="${esc(h.url)}" target="_blank" rel="noopener">Auf Wikiquote</a>` : ""}
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+}
+$("#quotes").addEventListener("click", async (e) => {
+  const btn = e.target.closest("button[data-act]"); if (!btn) return;
+  const h = history[+btn.closest(".q").dataset.i];
+  if (btn.dataset.act === "copy") {
+    await navigator.clipboard.writeText(`„${h.text}“\n— ${h.author}${h.source ? `, ${h.source}` : ""}`);
+    toast("Zitat kopiert.");
+  }
+  if (btn.dataset.act === "fav") toggleFavorite(h, btn);
+  if (btn.dataset.act === "video") showVideo(h, btn);
+});
+async function toggleFavorite(h, btn) {
+  const on = !favorites.keys.has(h.key);
+  on ? favorites.keys.add(h.key) : favorites.keys.delete(h.key);
+  btn.setAttribute("aria-pressed", on); btn.textContent = on ? "Favorit" : "Als Favorit merken";
+  const save = async () => {
+    favorites.sha = await putFile("data/favorites.json", JSON.stringify([...favorites.keys], null, 2) + "\n", favorites.sha,
+      `${on ? "Favorit" : "Kein Favorit mehr"}: ${h.author}`);
+  };
+  try { await save(); }
+  catch (x) {
+    if (x.status === 409 || x.status === 422) { // inzwischen geändert: neu laden und noch einmal
+      try {
+        const f = await getFile("data/favorites.json"); const keys = new Set(f.text ? JSON.parse(f.text) : []);
+        on ? keys.add(h.key) : keys.delete(h.key); favorites = { keys, sha: f.sha }; await save(); return;
+      } catch (y) { x = y; }
+    }
+    on ? favorites.keys.delete(h.key) : favorites.keys.add(h.key);
+    btn.setAttribute("aria-pressed", !on); btn.textContent = !on ? "Favorit" : "Als Favorit merken";
+    toast(x.message, true);
+  }
+}
+let releaseAssets = null;
+async function showVideo(h, btn) {
+  const art = btn.closest(".q");
+  const existing = art.querySelector("video");
+  if (existing) { existing.remove(); btn.textContent = "Video ansehen"; return; }
+  btn.disabled = true; btn.textContent = "Lade Video …";
+  try {
+    if (!releaseAssets) {
+      try { releaseAssets = (await gh(`${R()}/releases/tags/videos`)).assets; }
+      catch (x) { if (x.status === 404) releaseAssets = []; else throw x; }
+    }
+    const asset = releaseAssets.find((a) => a.name === h.video);
+    if (!asset) throw new Error("Dieses Video liegt nicht im Archiv. Videos werden erst seit Einrichtung des Archivs gespeichert.");
+    const res = await gh(asset.url, { accept: "application/octet-stream", raw: true });
+    const url = URL.createObjectURL(await res.blob());
+    const v = document.createElement("video");
+    v.src = url; v.controls = true; v.autoplay = true; v.playsInline = true;
+    art.querySelector(".acts").after(v);
+    btn.textContent = "Video schließen";
+  } catch (x) {
+    toast(x.message === "Failed to fetch" ? "Das Video ließ sich nicht laden. Es liegt im Release „videos“ auf GitHub." : x.message, true);
+    btn.textContent = "Video ansehen";
+  } finally { btn.disabled = false; }
+}
+
+/* ================= Autoren und Filter ================= */
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const isDirty = () => !!draft && JSON.stringify(draft) !== JSON.stringify(settings);
+const splitWords = (s) => s.split(/[,\n]/).map((w) => w.trim().toLowerCase()).filter(Boolean);
+async function loadSettings() {
+  const f = await getFile("config/settings.json");
+  if (f.text == null) throw new Error("config/settings.json fehlt im Repository.");
+  settings = JSON.parse(f.text); settingsSha = f.sha;
+  settings.blocked ||= [];
+  draft = clone(settings);
+  renderSettings();
+}
+function renderSettings() {
+  $("#authors-body").innerHTML = draft.authors.map((a, i) => `
+    <tr data-i="${i}" class="${a.active === false ? "off" : ""}">
+      <td><input type="checkbox" class="check" data-f="active" ${a.active !== false ? "checked" : ""} aria-label="${esc(a.name)} aktiv"></td>
+      <td><input type="text" data-f="name" value="${esc(a.name)}" aria-label="Name"></td>
+      <td class="page"><input type="text" data-f="page" value="${esc(a.page)}" aria-label="Wikiquote-Seite"></td>
+      <td class="w"><input type="number" data-f="weight" min="0" max="9" step="1" value="${a.weight}" aria-label="Gewicht"></td>
+      <td class="a"><button class="btn small" data-act="test">Prüfen</button>
+        <button class="btn small ghost" data-act="remove" aria-label="${esc(a.name)} entfernen">Entfernen</button></td>
+    </tr>
+    <tr class="cand" data-for="${i}" hidden><td colspan="5"></td></tr>`).join("");
+  $("#s-min").value = draft.filter.minLength; $("#s-max").value = draft.filter.maxLength; $("#s-words").value = draft.filter.maxWords;
+  $("#s-pos").value = draft.filter.positiveWords.join(", ");
+  $("#s-neg").value = draft.filter.negativeWords.join(", ");
+  renderBlocked();
+  updateDirty();
+}
+function renderBlocked() {
+  const list = draft.blocked;
+  $("#blocked-list").innerHTML = list.length
+    ? list.map((b, i) => `<div><span>${esc(typeof b === "string" ? b : `„${b.text}“ (${b.author})`)}</span>
+        <button class="btn small ghost" data-unblock="${i}">Wieder zulassen</button></div>`).join("")
+    : `<p class="hint" style="margin:0">Keine. Sperren kannst du einzelne Zitate über „Prüfen“ bei einem Autor.</p>`;
+}
+function updateDirty() { $("#settings-bar").hidden = !isDirty(); }
+$("#authors-body").addEventListener("input", (e) => {
+  const f = e.target.dataset.f; if (!f) return;
+  const tr = e.target.closest("tr"), a = draft.authors[+tr.dataset.i];
+  a[f] = f === "active" ? e.target.checked : f === "weight" ? Math.max(0, Math.round(+e.target.value || 0)) : e.target.value;
+  if (f === "active") tr.classList.toggle("off", !e.target.checked);
+  updateDirty();
+});
+$("#authors-body").addEventListener("click", async (e) => {
+  const btn = e.target.closest("button[data-act]"); if (!btn) return;
+  const i = +btn.closest("tr").dataset.i;
+  if (btn.dataset.act === "remove") {
+    if (!confirm(`${draft.authors[i].name || "Diesen Autor"} aus der Liste entfernen?`)) return;
+    draft.authors.splice(i, 1); renderSettings(); return;
+  }
+  if (btn.dataset.act === "test") testAuthor(i, btn);
+});
+$("#add-author").onclick = () => {
+  draft.authors.push({ name: "", page: "", weight: 1, active: true });
+  renderSettings();
+  $(`#authors-body tr[data-i="${draft.authors.length - 1}"] input[data-f=name]`).focus();
+};
+function readFilterInputs() {
+  draft.filter.minLength = +$("#s-min").value || 0;
+  draft.filter.maxLength = +$("#s-max").value || 0;
+  draft.filter.maxWords = +$("#s-words").value || 0;
+  draft.filter.positiveWords = splitWords($("#s-pos").value);
+  draft.filter.negativeWords = splitWords($("#s-neg").value);
+  updateDirty();
+}
+["#s-min", "#s-max", "#s-words", "#s-pos", "#s-neg"].forEach((s) => $(s).addEventListener("input", readFilterInputs));
+const blockedKeySet = () => new Set(draft.blocked.map((b) => (typeof b === "string" ? b : b.key)));
+async function testAuthor(i, btn) {
+  const a = draft.authors[i], row = $(`tr.cand[data-for="${i}"]`), cell = row.firstElementChild;
+  if (!row.hidden && btn.textContent === "Schließen") { row.hidden = true; btn.textContent = "Prüfen"; return; }
+  if (!a.page) { toast("Trag zuerst die Seite auf Wikiquote ein, z.B. „Laotse“.", true); return; }
+  btn.disabled = true; btn.textContent = "Prüfe …";
+  try {
+    const { makeFilter, keyOf, fetchWikitext, parseQuotes } = await loadLib();
+    const { title, wikitext } = await fetchWikitext(a.page);
+    const all = parseQuotes(wikitext), ok = all.filter(makeFilter(draft.filter));
+    const used = new Set(history.map((h) => h.key)), blocked = blockedKeySet();
+    cell.innerHTML = `<div class="hint">Auf <a href="https://de.wikiquote.org/wiki/${encodeURIComponent(title.replace(/ /g, "_"))}" target="_blank" rel="noopener">${esc(title)}</a>
+      passen <b style="color:var(--ink)">${ok.length} von ${all.length}</b> belegten Zitaten zum Filter.
+      ${ok.filter((q) => used.has(keyOf(q))).length ? `${ok.filter((q) => used.has(keyOf(q))).length} davon wurden schon verschickt.` : ""}</div>
+      <div class="cand-list">${ok.map((q, n) => {
+        const k = keyOf(q), isB = blocked.has(k);
+        return `<div class="cand-item ${isB ? "blocked" : ""}" data-n="${n}"><p>${esc(q.text)}</p>
+          ${used.has(k) ? `<span class="hint">verschickt</span>` : `<button class="btn small ghost" data-block="${n}">${isB ? "Wieder zulassen" : "Sperren"}</button>`}</div>`;
+      }).join("") || `<p class="hint">Kein Zitat kommt durch den Filter. Der Autor wird dann einfach übersprungen.</p>`}</div>`;
+    cell._ok = ok; cell._author = a.name;
+    row.hidden = false; btn.textContent = "Schließen";
+  } catch (x) {
+    toast(/missingtitle|doesn't exist|existiert nicht/i.test(x.message) ? `Auf Wikiquote gibt es keine Seite „${a.page}“.` : x.message, true);
+    btn.textContent = "Prüfen";
+  } finally { btn.disabled = false; }
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-block]");
+  if (b) {
+    const cell = b.closest("td"), q = cell._ok[+b.dataset.block], k = lib.keyOf(q);
+    const idx = draft.blocked.findIndex((x) => (typeof x === "string" ? x : x.key) === k);
+    if (idx >= 0) draft.blocked.splice(idx, 1); else draft.blocked.push({ key: k, text: q.text, author: cell._author });
+    b.closest(".cand-item").classList.toggle("blocked", idx < 0);
+    b.textContent = idx < 0 ? "Wieder zulassen" : "Sperren";
+    renderBlocked(); updateDirty();
+  }
+  const u = e.target.closest("[data-unblock]");
+  if (u) { draft.blocked.splice(+u.dataset.unblock, 1); renderBlocked(); updateDirty(); }
+});
+$("#settings-discard").onclick = () => { draft = clone(settings); renderSettings(); };
+$("#settings-save").onclick = async (e) => {
+  const btn = e.target;
+  const bad = draft.authors.find((a) => !a.name.trim() || !a.page.trim());
+  if (bad) { toast("Jeder Autor braucht einen Namen und eine Wikiquote-Seite.", true); return; }
+  if (!draft.authors.some((a) => a.active !== false && a.weight > 0)) { toast("Mindestens ein Autor muss aktiv sein und ein Gewicht über 0 haben.", true); return; }
+  if (draft.filter.minLength >= draft.filter.maxLength) { toast("Die Mindestlänge muss kleiner als die Höchstlänge sein.", true); return; }
+  btn.disabled = true; btn.textContent = "Speichere …";
+  try {
+    draft.authors.forEach((a) => { a.name = a.name.trim(); a.page = a.page.trim(); });
+    settingsSha = await putFile("config/settings.json", JSON.stringify(draft, null, 2) + "\n", settingsSha, "Autoren und Filter über die Weboberfläche geändert");
+    settings = clone(draft); updateDirty();
+    loaded.delete("dateien");
+    toast("Gespeichert. Gilt ab dem nächsten Versand.");
+  } catch (x) { toast(x.message, true); }
+  finally { btn.disabled = false; btn.textContent = "Änderungen speichern"; }
+};
+
+/* ================= Versand ================= */
+let wf = null;
+async function loadVersand() {
+  await Promise.all([loadRuns(), loadCron()]);
+}
+async function loadRuns() {
+  const box = $("#runs");
+  try {
+    const j = await gh(`${R()}/actions/workflows/${WORKFLOW}/runs?per_page=12`);
+    box.innerHTML = j.workflow_runs.map((r) => {
+      const st = r.status !== "completed" ? "running" : r.conclusion === "success" ? "success" : "failure";
+      const label = st === "running" ? "Läuft gerade" : st === "success" ? "Verschickt" : r.conclusion === "cancelled" ? "Abgebrochen" : "Fehlgeschlagen";
+      const when = new Date(r.run_started_at || r.created_at).toLocaleString("de-DE", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+      const mins = r.status === "completed" ? Math.max(1, Math.round((new Date(r.updated_at) - new Date(r.run_started_at)) / 60000)) : null;
+      return `<div class="run"><span class="dot ${st}"></span>
+        <div>${label} <small>${when}${mins ? `, ${mins} Min.` : ""}, ${r.event === "schedule" ? "nach Zeitplan" : "von Hand gestartet"}</small></div>
+        <a href="${esc(r.html_url)}" target="_blank" rel="noopener">Protokoll</a></div>`;
+    }).join("") || `<p class="hint">Noch kein Lauf. Starte oben den ersten.</p>`;
+    clearTimeout(loadRuns.t);
+    if (j.workflow_runs.some((r) => r.status !== "completed") && location.hash === "#versand") loadRuns.t = setTimeout(loadRuns, 20000);
+  } catch (x) { box.innerHTML = `<p class="error">${esc(x.message)}</p>`; }
+}
+$("#runs-reload").onclick = loadRuns;
+$("#run-now").onclick = async (e) => {
+  const btn = e.target; btn.disabled = true;
+  try {
+    await gh(`${R()}/actions/workflows/${WORKFLOW}/dispatches`, { method: "POST", body: { ref: branch } });
+    $("#run-msg").textContent = "Gestartet. Die Mail kommt in etwa 5 bis 8 Minuten.";
+    setTimeout(loadRuns, 4000);
+  } catch (x) { toast(x.message, true); }
+  finally { setTimeout(() => (btn.disabled = false), 4000); }
+};
+// Berlin-Versatz zu UTC für ein Datum (Winter 60, Sommer 120 Minuten)
+function berlinOffset(d) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Berlin", hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(d).map((x) => [x.type, x.value]));
+  return (Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute) - Math.floor(d.getTime() / 60000) * 60000) / 60000;
+}
+const hhmm = (min) => `${String(Math.floor(((min % 1440) + 1440) % 1440 / 60)).padStart(2, "0")}:${String(((min % 60) + 60) % 60).padStart(2, "0")}`;
+async function loadCron() {
+  wf = await getFile(`.github/workflows/${WORKFLOW}`);
+  const m = wf.text && wf.text.match(/cron:\s*"(\d+) (\d+) \* \* \*"/);
+  if (!m) { $("#cron-hint").textContent = "Der Zeitplan hat ein eigenes Format. Ändere ihn unter Dateien."; return; }
+  const utc = +m[2] * 60 + +m[1], off = berlinOffset(new Date());
+  $("#cron-time").value = hhmm(utc + off);
+  $("#cron-time").dataset.orig = $("#cron-time").value;
+  $("#cron-save").disabled = true;
+  $("#cron-hint").textContent = `GitHub plant in UTC (${hhmm(utc)} Uhr). Deshalb kommt die Mail im Winter um ${hhmm(utc + 60)} und im Sommer um ${hhmm(utc + 120)} Uhr. Geplante Läufe starten bei GitHub oft 5 bis 30 Minuten später.`;
+}
+$("#cron-time").addEventListener("input", (e) => ($("#cron-save").disabled = !e.target.value || e.target.value === e.target.dataset.orig));
+$("#cron-save").onclick = async (e) => {
+  const btn = e.target; btn.disabled = true;
+  try {
+    const [h, mi] = $("#cron-time").value.split(":").map(Number);
+    const utc = ((h * 60 + mi - berlinOffset(new Date())) % 1440 + 1440) % 1440;
+    const text = wf.text.replace(/cron:\s*"(\d+) (\d+) \* \* \*"/, `cron: "${utc % 60} ${Math.floor(utc / 60)} * * *"`);
+    wf.sha = await putFile(`.github/workflows/${WORKFLOW}`, text, wf.sha, `Versandzeit auf ${$("#cron-time").value} Uhr geändert`);
+    wf.text = text; loaded.delete("dateien");
+    await loadCron();
+    $("#cron-msg").textContent = "Gespeichert.";
+  } catch (x) { toast(x.message, true); btn.disabled = false; }
+};
+
+/* ================= Dateien ================= */
+let cur = null, edDirty = false;
+function renderFileList() {
+  $("#filelist").innerHTML = EDITABLE.map(([p, label]) =>
+    `<button data-path="${esc(p)}" ${cur?.path === p ? 'aria-current="true"' : ""}>${esc(label)}<small>${esc(p)}</small></button>`).join("");
+}
+$("#filelist").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-path]"); if (!b) return;
+  if (edDirty && !confirm("Deine Änderungen an dieser Datei sind noch nicht gespeichert. Trotzdem wechseln?")) return;
+  openFile(b.dataset.path);
+});
+async function openFile(path) {
+  $("#ed-status").textContent = "Lade …"; $("#ed-text").value = ""; $("#ed-path").textContent = path;
+  const f = await getFile(path);
+  cur = { path, sha: f.sha, orig: f.text ?? "" };
+  $("#ed-text").value = cur.orig; edDirty = false; $("#ed-save").disabled = true;
+  $("#ed-history").href = `https://github.com/${repo}/commits/${branch}/${path}`;
+  $("#ed-status").textContent = f.text == null ? "Die Datei gibt es noch nicht. Beim Speichern wird sie angelegt." : "";
+  renderFileList();
+}
+$("#ed-text").addEventListener("input", () => { edDirty = $("#ed-text").value !== cur.orig; $("#ed-save").disabled = !edDirty; });
+$("#ed-text").addEventListener("keydown", (e) => {
+  if (e.key === "Tab" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+    e.preventDefault(); document.execCommand("insertText", false, "  ");
+  }
+  if (e.key === "s" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); if (edDirty) $("#ed-save").click(); }
+});
+$("#ed-save").onclick = async (e) => {
+  const btn = e.target, text = $("#ed-text").value;
+  if (cur.path.endsWith(".json")) {
+    try { JSON.parse(text); } catch (x) { toast(`Kein gültiges JSON: ${x.message}`, true); return; }
+  }
+  btn.disabled = true; $("#ed-status").textContent = "Speichere …";
+  try {
+    cur.sha = await putFile(cur.path, text, cur.sha, $("#ed-msg").value.trim() || `${cur.path} über die Weboberfläche geändert`);
+    cur.orig = text; edDirty = false; $("#ed-msg").value = "";
+    $("#ed-status").textContent = "Gespeichert. Gilt ab dem nächsten Versand.";
+    if (cur.path === "config/settings.json") loaded.delete("einstellungen");
+    if (/quote-filter|wikiquote/.test(cur.path)) lib = null;
+    if (cur.path.includes("workflows")) wf = null;
+  } catch (x) { $("#ed-status").textContent = ""; toast(x.message, true); btn.disabled = false; }
+};
+
+showLock();
+</script>
+</body>
+</html>
