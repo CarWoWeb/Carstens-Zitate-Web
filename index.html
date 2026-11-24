@@ -120,7 +120,8 @@
   .q .by .src { font: 400 13px var(--sans); font-style: normal; color: var(--faint); margin-left: 6px; }
   .q .acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
   .q .fav[aria-pressed=true] { color: var(--gold); border-color: rgba(233,187,106,.5); background: var(--gold-soft); }
-  .q video { margin-top: 14px; width: 240px; aspect-ratio: 9 / 16; border-radius: 10px; background: #000; display: block; }
+  .q video, .q .still img { margin-top: 14px; width: 240px; aspect-ratio: 9 / 16; border-radius: 10px; background: #000; display: block; }
+  .q .still a { display: inline-block; margin-top: 8px; font-size: 13px; }
   mark { background: var(--gold-soft); color: inherit; border-bottom: 1px solid var(--gold); }
   .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 1px 8px; margin-left: 6px; font-style: normal; }
   .empty { padding: 48px 0; color: var(--muted); max-width: 52ch; }
@@ -662,7 +663,8 @@ function renderArchive() {
           <button class="btn small fav" data-act="fav" aria-pressed="${fav}">${fav ? "Favorit" : "Als Favorit merken"}</button>
           ${h.video ? `<button class="btn small" data-act="video">Video ansehen</button>` : ""}
           ${h.video ? `<a class="btn small ghost" href="https://github.com/${esc(repo)}/releases/download/videos/${encodeURIComponent(h.video)}" target="_blank" rel="noopener">Original herunterladen</a>` : ""}
-          ${h.dropboxLink ? `<button class="btn small" data-act="share">Teilen</button>` : ""}
+          ${h.image ? `<button class="btn small" data-act="image">Bild</button>` : ""}
+          ${h.dropboxLink || h.image ? `<button class="btn small" data-act="share">Teilen</button>` : ""}
           <button class="btn small ghost" data-act="copy">Text kopieren</button>
           ${h.url ? `<a class="btn small ghost" href="${esc(h.url)}" target="_blank" rel="noopener">Auf Wikiquote</a>` : ""}
         </div>
@@ -678,18 +680,27 @@ $("#quotes").addEventListener("click", async (e) => {
     toast("Zitat kopiert.");
   }
   if (btn.dataset.act === "share") {
-    // Handy: Teilen-Menü des Systems (WhatsApp, Signal, Mail …). Sonst: Text mit Link kopieren.
-    const text = `„${h.text.replace(/\n/g, " ")}“ – ${h.author}`;
-    if (navigator.share) {
-      try { await navigator.share({ title: "Gedanke des Tages", text, url: h.dropboxLink }); }
-      catch (x) { if (x.name !== "AbortError") toast(x.message, true); }
-    } else {
-      await navigator.clipboard.writeText(`${text}\n\n${h.dropboxLink}`);
-      toast("Zitat und Video-Link kopiert. Zum Teilen einfach einfügen.");
-    }
+    // Handy: Teilen-Menü des Systems (WhatsApp, Signal, Mail …) – mit Bild, wenn möglich.
+    // Am PC: Zitat und Link in die Zwischenablage.
+    const text = `„${h.text.replace(/\n/g, " ")}“ – ${h.author}${h.dropboxLink ? `\n\nVideo: ${h.dropboxLink}` : ""}`;
+    try {
+      if (navigator.share) {
+        let files;
+        if (h.image && navigator.canShare) {
+          const name = h.image.replace(/\.png$/, ".jpg");
+          const file = new File([await archiveFile(name, "image/jpeg")], `gedanke-des-tages-${name}`, { type: "image/jpeg" });
+          if (navigator.canShare({ files: [file] })) files = [file];
+        }
+        await navigator.share({ title: "Gedanke des Tages", text, ...(files ? { files } : {}) });
+      } else {
+        await navigator.clipboard.writeText(text);
+        toast(h.dropboxLink ? "Zitat und Video-Link kopiert. Zum Teilen einfach einfügen." : "Zitat kopiert.");
+      }
+    } catch (x) { if (x.name !== "AbortError") toast(x.message, true); }
   }
   if (btn.dataset.act === "fav") toggleFavorite(h, btn);
   if (btn.dataset.act === "video") showVideo(h, btn);
+  if (btn.dataset.act === "image") showImage(h, btn);
 });
 async function toggleFavorite(h, btn) {
   const on = !favorites.keys.has(h.key);
@@ -712,6 +723,37 @@ async function toggleFavorite(h, btn) {
     toast(x.message, true);
   }
 }
+// Dateien aus dem Branch "video-archiv" (Release-Downloads blockiert der Browser, kein CORS)
+const archiveCache = new Map();
+async function archiveFile(name, type) {
+  if (!archiveCache.has(name)) {
+    const p = gh(`${R()}/contents/${encodeURIComponent(name)}?ref=video-archiv`, { accept: "application/vnd.github.raw+json", raw: true })
+      .then(async (res) => new Blob([await res.arrayBuffer()], { type }));
+    archiveCache.set(name, p);
+    p.catch(() => archiveCache.delete(name));
+  }
+  return archiveCache.get(name);
+}
+async function showImage(h, btn) {
+  const art = btn.closest(".q");
+  const existing = art.querySelector(".still");
+  if (existing) { existing.remove(); btn.textContent = "Bild"; return; }
+  btn.disabled = true; btn.textContent = "Lade Bild …";
+  try {
+    const name = h.image.replace(/\.png$/, ".jpg");
+    const url = URL.createObjectURL(await archiveFile(name, "image/jpeg"));
+    const box = document.createElement("div");
+    box.className = "still";
+    box.innerHTML = `<img alt="Standbild: ${esc(h.text)} – ${esc(h.author)}">
+      <a download="gedanke-des-tages-${esc(name)}">Bild speichern</a>${h.imageLink ? ` &nbsp; <a href="${esc(h.imageLink)}" target="_blank" rel="noopener">Original (PNG) in Dropbox</a>` : ""}`;
+    box.querySelector("img").src = url; box.querySelector("a[download]").href = url;
+    art.querySelector(".acts").after(box);
+    btn.textContent = "Bild schließen";
+  } catch (x) {
+    toast(x.status === 404 ? "Zu diesem Zitat gibt es noch kein Bild im Archiv." : x.message, true);
+    btn.textContent = "Bild";
+  } finally { btn.disabled = false; }
+}
 async function showVideo(h, btn) {
   const art = btn.closest(".q");
   const existing = art.querySelector("video");
@@ -719,8 +761,7 @@ async function showVideo(h, btn) {
   btn.disabled = true; btn.textContent = "Lade Video …";
   try {
     // Abspielkopie (720×1280) liegt im Branch "video-archiv". Release-Downloads blockiert der Browser (kein CORS).
-    const res = await gh(`${R()}/contents/${encodeURIComponent(h.video)}?ref=video-archiv`, { accept: "application/vnd.github.raw+json", raw: true });
-    const url = URL.createObjectURL(new Blob([await res.arrayBuffer()], { type: "video/mp4" }));
+    const url = URL.createObjectURL(await archiveFile(h.video, "video/mp4"));
     const v = document.createElement("video");
     v.src = url; v.controls = true; v.autoplay = true; v.playsInline = true;
     art.querySelector(".acts").after(v);
