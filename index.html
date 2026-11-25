@@ -122,6 +122,12 @@
   .q .fav[aria-pressed=true] { color: var(--gold); border-color: rgba(233,187,106,.5); background: var(--gold-soft); }
   .q video, .q .still img { margin-top: 14px; width: 240px; aspect-ratio: 9 / 16; border-radius: 10px; background: #000; display: block; }
   .q .still a { display: inline-block; margin-top: 8px; font-size: 13px; }
+  .q .explain { margin-top: 14px; max-width: 62ch; padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--night); }
+  .q .explain p { margin: 0 0 10px; line-height: 1.55; }
+  .q .explain .lbl { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin: 0 0 6px; }
+  .q .explain .origin { color: var(--muted); }
+  .q .explain .ask { margin: 14px 0 0; padding: 10px 14px; border-left: 3px solid var(--gold); background: var(--gold-soft); border-radius: 0 8px 8px 0; font-style: italic; }
+  .q .explain .note { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
   mark { background: var(--gold-soft); color: inherit; border-bottom: 1px solid var(--gold); }
   .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 1px 8px; margin-left: 6px; font-style: normal; }
   .empty { padding: 48px 0; color: var(--muted); max-width: 52ch; }
@@ -661,6 +667,7 @@ function renderArchive() {
         <div class="by">${highlight(h.author, q)}${h.source ? `<span class="src">${highlight(h.source, q)}</span>` : ""}${h.origin === "reserve" ? `<span class="tag">Reserve</span>` : ""}</div>
         <div class="acts">
           <button class="btn small fav" data-act="fav" aria-pressed="${fav}">${fav ? "Favorit" : "Als Favorit merken"}</button>
+          ${h.explanation ? `<button class="btn small" data-act="explain" aria-expanded="false">Erklärung</button>` : ""}
           ${h.video ? `<button class="btn small" data-act="video">Video ansehen</button>` : ""}
           ${h.video ? `<a class="btn small ghost" href="https://github.com/${esc(repo)}/releases/download/videos/${encodeURIComponent(h.video)}" target="_blank" rel="noopener">Original herunterladen</a>` : ""}
           ${h.image ? `<button class="btn small" data-act="image">Bild</button>` : ""}
@@ -682,7 +689,7 @@ $("#quotes").addEventListener("click", async (e) => {
   if (btn.dataset.act === "share") {
     // Handy: Teilen-Menü des Systems (WhatsApp, Signal, Mail …) – mit Bild, wenn möglich.
     // Am PC: Zitat und Link in die Zwischenablage.
-    const text = `„${h.text.replace(/\n/g, " ")}“ – ${h.author}${h.dropboxLink ? `\n\nVideo: ${h.dropboxLink}` : ""}`;
+    const text = `„${h.text.replace(/\n/g, " ")}“ – ${h.author}${h.explanation?.frage ? `\n\nFrage für heute: ${h.explanation.frage}` : ""}${h.dropboxLink ? `\n\nVideo: ${h.dropboxLink}` : ""}`;
     try {
       if (navigator.share) {
         let files;
@@ -701,7 +708,23 @@ $("#quotes").addEventListener("click", async (e) => {
   if (btn.dataset.act === "fav") toggleFavorite(h, btn);
   if (btn.dataset.act === "video") showVideo(h, btn);
   if (btn.dataset.act === "image") showImage(h, btn);
+  if (btn.dataset.act === "explain") toggleExplanation(h, btn);
 });
+function toggleExplanation(h, btn) {
+  const art = btn.closest(".q");
+  const existing = art.querySelector(".explain");
+  if (existing) { existing.remove(); btn.setAttribute("aria-expanded", "false"); btn.textContent = "Erklärung"; return; }
+  const ex = h.explanation;
+  const box = document.createElement("div");
+  box.className = "explain";
+  box.innerHTML = `<p class="lbl">Zum Nachdenken</p>
+    ${ex.herkunft ? `<p class="origin">${esc(ex.herkunft)}</p>` : ""}
+    <p>${esc(ex.bedeutung)}</p>
+    ${ex.frage ? `<p class="ask"><span class="lbl" style="display:block;font-style:normal">Frage für heute</span>${esc(ex.frage)}</p>` : ""}
+    ${ex.hinweis ? `<p class="note">Hinweis: ${esc(ex.hinweis)}</p>` : ""}`;
+  art.querySelector(".acts").after(box);
+  btn.setAttribute("aria-expanded", "true"); btn.textContent = "Erklärung schließen";
+}
 async function toggleFavorite(h, btn) {
   const on = !favorites.keys.has(h.key);
   on ? favorites.keys.add(h.key) : favorites.keys.delete(h.key);
