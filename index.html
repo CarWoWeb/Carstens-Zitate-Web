@@ -133,6 +133,61 @@
   .empty { padding: 48px 0; color: var(--muted); max-width: 52ch; }
   .empty p { font: 400 22px/1.4 var(--serif); color: var(--ink); margin: 0 0 8px; }
 
+  /* ---------- Adventskalender ---------- */
+  .adv-head { display: flex; gap: 16px; align-items: end; justify-content: space-between; flex-wrap: wrap; margin-bottom: 22px; }
+  .adv-head .lead { margin: 0; }
+  .cal {
+    position: relative; overflow: hidden; border-radius: 18px; padding: 22px; border: 1px solid #4a3a52;
+    background:
+      radial-gradient(500px 300px at 15% 10%, rgba(233,187,106,.18), transparent 70%),
+      radial-gradient(600px 380px at 90% 100%, rgba(200,80,110,.20), transparent 70%),
+      linear-gradient(160deg, #2a1a33, #161a3a 60%, #10142b);
+  }
+  .cal::before { /* Sternenstaub */
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .55;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 33% 72%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 58% 31%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 81% 12%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 91% 64%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 6% 88%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 47% 94%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 69% 52%, #fff 50%, transparent 51%);
+  }
+  .doors { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: 118px; grid-auto-flow: dense; gap: 12px; }
+  .door { position: relative; perspective: 900px; border: 0; padding: 0; background: none; cursor: pointer; text-align: left; }
+  .door.wide { grid-column: span 2; }
+  .door.big { grid-column: span 2; grid-row: span 2; }
+  .door .inside {
+    position: absolute; inset: 0; border-radius: 10px; padding: 12px 14px; overflow: hidden;
+    background: linear-gradient(160deg, #1d2247, #10142b); border: 1px solid rgba(233,187,106,.35);
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;
+  }
+  .door .inside .who { font: italic 400 16px/1.2 var(--serif); color: var(--gold); }
+  .door .inside .snip { font: 400 14px/1.3 var(--serif); color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .door.big .inside .snip { -webkit-line-clamp: 6; font-size: 17px; }
+  .door .panel-front {
+    position: absolute; inset: 0; border-radius: 10px; transform-origin: left center; transition: transform .9s cubic-bezier(.5,.05,.25,1), box-shadow .9s;
+    background:
+      radial-gradient(120px 80px at 70% 20%, rgba(255,255,255,.07), transparent 70%),
+      linear-gradient(150deg, #3a2440, #262a55);
+    border: 1px solid rgba(233,187,106,.55); box-shadow: inset 0 0 0 4px rgba(16,20,43,.35);
+    display: grid; place-items: center;
+  }
+  .door .num { transition: opacity .4s; }
+  .door.open .num { opacity: 0; }
+  .door .num { font: 500 40px/1 var(--serif); color: var(--gold); text-shadow: 0 2px 12px rgba(233,187,106,.35); }
+  .door.big .num { font-size: 74px; }
+  .door.locked { cursor: default; }
+  .door.locked .num { color: rgba(233,187,106,.55); }
+  .door.empty .panel-front { opacity: .45; }
+  .door.ready .panel-front { animation: glow 2.4s ease-in-out infinite; }
+  @keyframes glow { 50% { box-shadow: inset 0 0 0 4px rgba(16,20,43,.35), 0 0 24px 4px rgba(233,187,106,.45); } }
+  .door.open .panel-front { transform: rotateY(-108deg); box-shadow: 8px 0 18px rgba(0,0,0,.45); }
+  .door.sel .inside { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold) inset; }
+  .door.shake { animation: shake .4s; }
+  @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  .adv-detail { margin-top: 26px; }
+  .adv-detail .q { border-bottom: 0; }
+  .adv-note { margin: 16px 0 0; color: var(--muted); }
+
   /* ---------- Einstellungen ---------- */
   table.authors { width: 100%; border-collapse: collapse; }
   table.authors th { text-align: left; font: 500 13px var(--sans); color: var(--muted); padding: 0 8px 8px; }
@@ -200,6 +255,13 @@
     .q time b { display: inline; font-size: 18px; margin-right: 6px; }
     .q blockquote { font-size: 22px; }
     .grid3, .grid2 { grid-template-columns: 1fr; }
+    .cal { padding: 14px; }
+    .doors { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 96px; gap: 9px; }
+    .door .num { font-size: 32px; }
+    .door.big .num { font-size: 58px; }
+    .door .inside { padding: 9px 10px; }
+    .door .inside .who { font-size: 14px; }
+    .door:not(.big) .inside .snip { display: none; }
     table.authors thead { display: none; }
     table.authors tr:not(.cand) { display: grid; grid-template-columns: auto 1fr 80px; gap: 6px; padding: 8px 0; border-top: 1px solid var(--line); }
     table.authors td { border: 0; padding: 2px; }
@@ -209,6 +271,8 @@
   @media (prefers-reduced-motion: reduce) {
     .enso path { animation: none; stroke-dashoffset: 0; }
     .dot.running { animation: none; }
+    .door .panel-front { transition: none; }
+    .door.ready .panel-front, .door.shake { animation: none; }
   }
 </style>
 </head>
@@ -268,6 +332,7 @@
       </div>
       <nav class="tabs" aria-label="Bereiche">
         <a href="#archiv">Archiv</a>
+        <a href="#advent">Advent</a>
         <a href="#einstellungen">Autoren und Filter</a>
         <a href="#versand">Versand</a>
         <a href="#dateien">Dateien</a>
@@ -300,6 +365,19 @@
         </aside>
         <div class="quotes" id="quotes"></div>
       </div>
+    </section>
+
+    <!-- Adventskalender -->
+    <section id="view-advent" hidden>
+      <div class="adv-head">
+        <div>
+          <h2>Adventskalender</h2>
+          <p class="lead" id="adv-lead"></p>
+        </div>
+        <label class="field" id="adv-year-box" hidden><span>Jahr</span><select id="adv-year"></select></label>
+      </div>
+      <div class="cal"><div class="doors" id="doors"></div></div>
+      <div class="adv-detail quotes" id="adv-detail"></div>
     </section>
 
     <!-- Einstellungen -->
@@ -589,7 +667,7 @@ async function start() {
 }
 
 /* ---------------- Navigation ---------------- */
-const VIEWS = ["archiv", "einstellungen", "versand", "dateien"];
+const VIEWS = ["archiv", "advent", "einstellungen", "versand", "dateien"];
 const loaded = new Set();
 async function route() {
   if (!token) return;
@@ -600,6 +678,7 @@ async function route() {
   $("#settings-bar").hidden = v !== "einstellungen" || !isDirty();
   try {
     if (v === "einstellungen" && !loaded.has(v)) { await loadSettings(); loaded.add(v); }
+    if (v === "advent") renderAdvent();
     if (v === "versand") { await loadVersand(); loaded.add(v); }
     if (v === "dateien" && !loaded.has(v)) { renderFileList(); await openFile(EDITABLE[0][0]); loaded.add(v); }
   } catch (x) { toast(x.message, true); }
@@ -657,7 +736,9 @@ function renderArchive() {
     return;
   }
   if (!list.length) { box.innerHTML = `<div class="empty"><p>Kein Zitat passt zu diesem Filter.</p>Ändere die Suche oder setze den Filter zurück.</div>`; return; }
-  box.innerHTML = list.map((h) => {
+  box.innerHTML = list.map((h) => quoteArticle(h, q)).join("");
+}
+function quoteArticle(h, q = "") {
     const d = new Date(h.date + "T12:00:00");
     const fav = favorites.keys.has(h.key);
     return `<article class="q" data-i="${h._i}">
@@ -677,9 +758,8 @@ function renderArchive() {
         </div>
       </div>
     </article>`;
-  }).join("");
 }
-$("#quotes").addEventListener("click", async (e) => {
+async function onQuoteClick(e) {
   const btn = e.target.closest("button[data-act]"); if (!btn) return;
   const h = history[+btn.closest(".q").dataset.i];
   if (btn.dataset.act === "copy") {
@@ -709,7 +789,9 @@ $("#quotes").addEventListener("click", async (e) => {
   if (btn.dataset.act === "video") showVideo(h, btn);
   if (btn.dataset.act === "image") showImage(h, btn);
   if (btn.dataset.act === "explain") toggleExplanation(h, btn);
-});
+}
+$("#quotes").addEventListener("click", onQuoteClick);
+$("#adv-detail").addEventListener("click", onQuoteClick);
 function toggleExplanation(h, btn) {
   const art = btn.closest(".q");
   const existing = art.querySelector(".explain");
@@ -725,6 +807,73 @@ function toggleExplanation(h, btn) {
   art.querySelector(".acts").after(box);
   btn.setAttribute("aria-expanded", "true"); btn.textContent = "Erklärung schließen";
 }
+/* ================= Adventskalender ================= */
+// Türchen in gemischter Reihenfolge wie bei einem echten Kalender; 24 ist groß, drei sind breit.
+const DOOR_ORDER = [7, 15, 1, 22, 10, 4, 18, 12, 24, 3, 20, 9, 14, 6, 17, 2, 11, 21, 5, 16, 8, 23, 13, 19];
+const DOOR_SIZE = { 24: "big", 6: "wide", 12: "wide", 18: "wide" };
+const OPENED = "gdt.advent.opened";
+const todayBerlin = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin" }).format(new Date());
+const opened = () => new Set(JSON.parse(localStorage.getItem(OPENED) || "[]"));
+const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
+const adventDate = (y, n) => `${y}-12-${String(n).padStart(2, "0")}`;
+const adventEntry = (date) => history.findLast((h) => h.date === date);
+let advYear = null, advSel = null;
+
+function renderAdvent() {
+  const today = todayBerlin(), thisYear = today.slice(0, 4);
+  const years = [...new Set([thisYear, ...history.filter((h) => /-12-(0[1-9]|1\d|2[0-4])$/.test(h.date)).map((h) => h.date.slice(0, 4))])].sort().reverse();
+  advYear ||= thisYear;
+  $("#adv-year-box").hidden = years.length < 2;
+  $("#adv-year").innerHTML = years.map((y) => `<option ${y === advYear ? "selected" : ""}>${y}</option>`).join("");
+
+  const first = adventDate(advYear, 1), last = adventDate(advYear, 24);
+  const lead = $("#adv-lead");
+  if (today < first) {
+    const n = daysBetween(today, first);
+    lead.textContent = `Vom 1. bis 24. Dezember kommt jeden Morgen ein Gedanke zu Licht, Stille, Dank und Hoffnung. Das erste Türchen geht ${n === 1 ? "morgen" : `in ${n} Tagen`} auf.`;
+  } else if (today <= last) {
+    const n = +today.slice(8);
+    lead.textContent = adventEntry(today)
+      ? `Heute ist Türchen ${n} dran. Vergangene Türchen kannst du jederzeit wieder öffnen.`
+      : `Heute ist Türchen ${n} dran. Es geht auf, sobald der Gedanke am Morgen verschickt ist.`;
+  } else {
+    lead.textContent = `Der Adventskalender ${advYear}: alle Gedanken zum Nachlesen.`;
+  }
+
+  const open = opened();
+  $("#doors").innerHTML = DOOR_ORDER.map((n) => {
+    const date = adventDate(advYear, n), h = adventEntry(date);
+    const state = h ? (open.has(date) ? "open" : "ready") : date > today ? "locked" : "empty";
+    const label = h ? `Türchen ${n}: ${h.author}` : state === "locked" ? `Türchen ${n}, noch verschlossen` : `Türchen ${n}, kein Gedanke`;
+    return `<button class="door ${DOOR_SIZE[n] || ""} ${state} ${date === advSel ? "sel" : ""}" data-n="${n}" aria-label="${esc(label)}">
+      <span class="inside">${h ? `<span class="who">${esc(h.author)}</span><span class="snip">${esc(h.text)}</span>` : ""}</span>
+      <span class="panel-front"><span class="num">${n}</span></span>
+    </button>`;
+  }).join("");
+  const sel = advSel?.startsWith(advYear) && adventEntry(advSel);
+  $("#adv-detail").innerHTML = sel ? quoteArticle(sel) : "";
+}
+$("#adv-year").addEventListener("input", (e) => { advYear = e.target.value; advSel = null; renderAdvent(); });
+$("#doors").addEventListener("click", (e) => {
+  const door = e.target.closest(".door"); if (!door) return;
+  const n = +door.dataset.n, date = adventDate(advYear, n), h = adventEntry(date), today = todayBerlin();
+  if (!h) {
+    if (date > today) {
+      const d = daysBetween(today, date);
+      toast(`Türchen ${n} geht am ${n}. Dezember auf${d === 1 ? ", also morgen." : `, in ${d} Tagen.`}`);
+      door.classList.remove("shake"); void door.offsetWidth; door.classList.add("shake");
+    } else toast(date === today ? "Der Gedanke für heute ist noch unterwegs." : "An diesem Tag gab es keinen Adventsgedanken.");
+    return;
+  }
+  const open = opened();
+  if (!open.has(date)) { open.add(date); localStorage.setItem(OPENED, JSON.stringify([...open])); }
+  document.querySelectorAll(".door.sel").forEach((x) => x.classList.remove("sel"));
+  door.classList.remove("ready"); door.classList.add("open", "sel");
+  advSel = date;
+  $("#adv-detail").innerHTML = quoteArticle(h);
+  setTimeout(() => $("#adv-detail").scrollIntoView({ behavior: "smooth", block: "nearest" }), 500);
+});
+
 async function toggleFavorite(h, btn) {
   const on = !favorites.keys.has(h.key);
   on ? favorites.keys.add(h.key) : favorites.keys.delete(h.key);
